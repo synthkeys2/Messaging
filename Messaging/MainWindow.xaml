@@ -13,7 +13,7 @@
             <Label Content="IP:" Height="28" Name="label1" />
             <TextBox Height="23" Name="IPTextBox" Width="120" Text="127.0.0.1" HorizontalAlignment="Stretch" TextAlignment="Center" />
             <Label Content="Port:" Height="28" Name="label2" />
-            <TextBox Height="23" Name="textBox1" Width="120" Text="5678" TextAlignment="Center" />
+            <TextBox Height="23" Name="PortTextBox" Width="120" Text="5678" TextAlignment="Center" />
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Name="LogTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="485" Text="Ready to connect!" />

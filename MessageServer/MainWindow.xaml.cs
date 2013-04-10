@@ -23,5 +23,18 @@ namespace MessageServer
         {
             InitializeComponent();
         }
+
+        private void ListenButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogToTextBox("Listening");
+        }
+
+        public void LogToTextBox(string message)
+        {
+            LogTextBox.Text += "\n" + message + "...";
+            LogTextBox.Focus();
+            LogTextBox.CaretIndex = LogTextBox.Text.Length;
+            LogTextBox.ScrollToEnd();
+        }
     }
 }
