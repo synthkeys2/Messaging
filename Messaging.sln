@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageClient", "Messaging\MessageClient.csproj", "{9C771CE3-9AD7-458A-B6CA-F8DE95CA7944}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageServer", "MessageServer\MessageServer.csproj", "{372DD82D-62EF-40A5-A7E0-626F83E36CC6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C771CE3-9AD7-458A-B6CA-F8DE95CA7944}.Debug|x86.ActiveCfg = Debug|x86
+		{9C771CE3-9AD7-458A-B6CA-F8DE95CA7944}.Debug|x86.Build.0 = Debug|x86
+		{9C771CE3-9AD7-458A-B6CA-F8DE95CA7944}.Release|x86.ActiveCfg = Release|x86
+		{9C771CE3-9AD7-458A-B6CA-F8DE95CA7944}.Release|x86.Build.0 = Release|x86
+		{372DD82D-62EF-40A5-A7E0-626F83E36CC6}.Debug|x86.ActiveCfg = Debug|x86
+		{372DD82D-62EF-40A5-A7E0-626F83E36CC6}.Debug|x86.Build.0 = Debug|x86
+		{372DD82D-62EF-40A5-A7E0-626F83E36CC6}.Release|x86.ActiveCfg = Release|x86
+		{372DD82D-62EF-40A5-A7E0-626F83E36CC6}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
