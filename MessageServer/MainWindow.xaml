@@ -10,7 +10,11 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row ="0" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
             <Button Content="Listen" Height="23" Name="ConnectButton" Width="75" Click="ListenButton_Click" />
-        </StackPanel>
+			<Label Content="IP:" Height="28" Name="label2" />
+			<ComboBox Height="23" Name="IPAddresses" Width="120" Text="" />
+			<Label Content="Port:" Height="28" Name="label1" />
+			<TextBox Height="23" Name="PortTextBox" Width="120" Text="16789" />
+		</StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Name="LogTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="485" Text="Ready to listen..." />
         </StackPanel>

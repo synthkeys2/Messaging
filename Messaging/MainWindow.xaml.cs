@@ -31,39 +31,71 @@ namespace Messaging
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            IPAddress IP = IPAddress.Parse(IPTextBox.Text);
-            int port = Convert.ToInt32(PortTextBox.Text);
+			LogToTextBox("Attempting to connect to " + IPTextBox.Text);
 
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            mConnectionFinished.Reset();
-            s.BeginConnect(IP, port, new AsyncCallback(ConnectCallback), s);
-
-            LogToTextBox("Attempting to connect to " + IPTextBox.Text);
- 
-
-            mConnectionFinished.WaitOne();
-
-            LogToTextBox("Successfully connected");
+			ConnectInfo connectInfo;
+			connectInfo.ip = IPAddress.Parse(IPTextBox.Text);
+			connectInfo.port = Convert.ToInt32(PortTextBox.Text);
+			Thread t = new Thread(NewConnectionThread);
+			t.Start(connectInfo);
         }
 
-        public void LogToTextBox(string message)
-        {
-            LogTextBox.Text += "\n" + message + "...";
-            LogTextBox.Focus();
-            LogTextBox.CaretIndex = LogTextBox.Text.Length;
-            LogTextBox.ScrollToEnd();
-        }
+		public void NewConnectionThread(object connectInfo)
+		{
+			try
+			{
+				Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				mConnectionFinished.Reset();
+				s.BeginConnect(((ConnectInfo)connectInfo).ip, ((ConnectInfo)connectInfo).port, new AsyncCallback(ConnectCallback), s);
+
+				mConnectionFinished.WaitOne();
+			}
+			catch (Exception ex)
+			{
+				LogToTextBox(ex.ToString());
+			}
+
+			LogToTextBox("Successfully connected");
+		}
 
         public void ConnectCallback(IAsyncResult ar)
         {
-            mConnectionFinished.Set();
-            Socket s = (Socket)ar.AsyncState;
-            s.EndConnect(ar);
-
-            Console.WriteLine("Socket connected to " + s.RemoteEndPoint.ToString());
+			try
+			{
+				mConnectionFinished.Set();
+				Socket s = (Socket)ar.AsyncState;
+				s.EndConnect(ar);
+				LogToTextBox("Socket connected to " + s.RemoteEndPoint.ToString());
+			}
+			catch (Exception ex)
+			{
+				LogToTextBox(ex.ToString());
+			}       
         }
 
+		delegate void LogToTextBoxDelegate(string message);
+
+		public void LogToTextBox(string message)
+		{
+			if (LogTextBox.Dispatcher.CheckAccess())
+			{
+				LogTextBox.Text += "\n" + message + "...";
+				LogTextBox.Focus();
+				LogTextBox.CaretIndex = LogTextBox.Text.Length;
+				LogTextBox.ScrollToEnd();
+			}
+			else
+			{
+				LogTextBox.Dispatcher.Invoke(new LogToTextBoxDelegate(LogToTextBox), message);
+			}
+		}
 
         private ManualResetEvent mConnectionFinished;
     }
+
+	struct ConnectInfo
+	{
+		public IPAddress ip;
+		public int port;
+	}
 }
