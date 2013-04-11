@@ -97,6 +97,9 @@ namespace MessageServer
             StateObject state = new StateObject();
             state.workSocket = handler;
             handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+<<<<<<< HEAD
+>>>>>>> 4c58808ad5f4e171e409e8361ef559267830712e
+=======
 >>>>>>> 4c58808ad5f4e171e409e8361ef559267830712e
 		}
 
@@ -140,6 +143,19 @@ namespace MessageServer
 		private ManualResetEvent mConnectionFinished;
 		private List<Socket> mClients;
 		private Dictionary<string, List<Socket>> mIDToSubscribers;
+    }
+
+    // State object for reading client data asynchronously
+    public class StateObject
+    {
+        // Client  socket.
+        public Socket workSocket = null;
+        // Size of receive buffer.
+        public const int BufferSize = 1024;
+        // Receive buffer.
+        public byte[] buffer = new byte[BufferSize];
+        // Received data string.
+        public StringBuilder sb = new StringBuilder();
     }
 
     // State object for reading client data asynchronously
