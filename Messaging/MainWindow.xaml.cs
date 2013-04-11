@@ -65,12 +65,37 @@ namespace Messaging
 				mConnectionFinished.Set();
 				Socket s = (Socket)ar.AsyncState;
 				s.EndConnect(ar);
+                mClient = s;
 				LogToTextBox("Socket connected to " + s.RemoteEndPoint.ToString());
+
+                StateObject state = new StateObject();
+                state.workSocket = mClient;
+                mClient.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), mClient);
 			}
 			catch (Exception ex)
 			{
 				LogToTextBox(ex.ToString());
 			}       
+        }
+
+        public void ReadCallback(IAsyncResult ar)
+        {
+            String content = String.Empty;
+
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+
+            int bytesRead = handler.EndReceive(ar);
+
+            if (bytesRead > 0)
+            {
+                state.sb.Clear();
+                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+                content = state.sb.ToString();
+                LogToTextBox(content);
+            }
+
+            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
         }
 
 		delegate void LogToTextBoxDelegate(string message);
@@ -90,7 +115,42 @@ namespace Messaging
 			}
 		}
 
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogToTextBox("Attempting to send message");
+            SendInfo sendInfo;
+            sendInfo.client = mClient;
+            sendInfo.data = PayloadTextBox.Text;
+
+            Thread t = new Thread(NewSendThread);
+            t.Start(sendInfo);
+        }
+
+        public void NewSendThread(object sendInfo)
+        {
+            SendInfo info = (SendInfo)sendInfo;
+            byte[] byteData = Encoding.ASCII.GetBytes(info.data);
+            info.client.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), info.client);
+            
+        }
+
+        public void SendCallback(IAsyncResult ar)
+        {
+            try
+            {
+                Socket client = (Socket)ar.AsyncState;
+                int bytesSent = client.EndSend(ar);
+                LogToTextBox("Sent " + bytesSent + " bytes to the server");
+
+            }
+            catch (Exception ex)
+            {
+                LogToTextBox(ex.ToString());
+            }
+        }
+
         private ManualResetEvent mConnectionFinished;
+        private Socket mClient;
     }
 
 	struct ConnectInfo
@@ -98,4 +158,23 @@ namespace Messaging
 		public IPAddress ip;
 		public int port;
 	}
+
+    struct SendInfo
+    {
+        public Socket client;
+        public String data;
+    }
+
+    // State object for reading client data asynchronously
+    public class StateObject
+    {
+        // Client  socket.
+        public Socket workSocket = null;
+        // Size of receive buffer.
+        public const int BufferSize = 1024;
+        // Receive buffer.
+        public byte[] buffer = new byte[BufferSize];
+        // Received data string.
+        public StringBuilder sb = new StringBuilder();
+    }
 }
