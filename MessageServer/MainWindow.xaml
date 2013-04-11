@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MessageServer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MessagingServer" Height="350" Width="525">
+        Title="MessagingServer" Height="350" Width="525" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40*" />

@@ -13,35 +13,45 @@ namespace MessagingCommon
 	}
 	public class Message : IComparable
 	{
-		Message(string messageAsString)
+		public Message()
 		{
+			mValues = new Dictionary<string, object>();
+		}
+
+		public Message(string messageAsString)
+		{
+			mValues = new Dictionary<string, object>();
+
 			string[] semiSplit = messageAsString.Split(';');
 
 			foreach (string nameValue in semiSplit)
 			{
 				string[] equalSplit = nameValue.Split('=');
-				if (equalSplit[0] == "MessageType")
+				if (equalSplit.Length == 2)
 				{
-					if (equalSplit[1] == "Subscribe")
+					if (equalSplit[0] == "MessageType")
 					{
-						mType = MessageType.Subscribe;
+						if (equalSplit[1] == "Subscribe")
+						{
+							mType = MessageType.Subscribe;
+						}
+						else if (equalSplit[1] == "Unsubscribe")
+						{
+							mType = MessageType.Unsubscribe;
+						}
+						else if (equalSplit[1] == "UserDefined")
+						{
+							mType = MessageType.UserDefined;
+						}
 					}
-					else if (equalSplit[1] == "Unsubscribe")
+					else if (equalSplit[0] == "MessageID")
 					{
-						mType = MessageType.Unsubscribe;
+						mID = equalSplit[1];
 					}
-					else if (equalSplit[1] == "UserDefined")
+					else
 					{
-						mType = MessageType.UserDefined;
+						mValues.Add(equalSplit[0], equalSplit[1]);
 					}
-				}
-				else if (equalSplit[0] == "MessageID")
-				{
-					mID = equalSplit[1];
-				}
-				else
-				{
-					mValues.Add(equalSplit[0], equalSplit[1]);
 				}
 			}
 		}

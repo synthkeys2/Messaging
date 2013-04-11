@@ -15,7 +15,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Messaging
+using MessagingCommon;
+
+namespace MessageClient
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -27,6 +29,7 @@ namespace Messaging
             InitializeComponent();
 
             mConnectionFinished = new ManualResetEvent(false);
+			mWindowClosing = new ManualResetEvent(false);
         }
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
@@ -70,7 +73,7 @@ namespace Messaging
 
                 StateObject state = new StateObject();
                 state.workSocket = mClient;
-                mClient.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), mClient);
+                mClient.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
 			}
 			catch (Exception ex)
 			{
@@ -80,22 +83,108 @@ namespace Messaging
 
         public void ReadCallback(IAsyncResult ar)
         {
+			mWindowClosing.Set();
             String content = String.Empty;
 
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
+			try
+			{
+				int bytesRead = handler.EndReceive(ar);
 
-            int bytesRead = handler.EndReceive(ar);
+				if (bytesRead > 0)
+				{
+					state.sb.Clear();
+					state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+					content = state.sb.ToString();
+					LogToTextBox(content);
+				}
 
-            if (bytesRead > 0)
+				mWindowClosing.Reset();
+				handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+				mWindowClosing.WaitOne();
+			}
+			catch (Exception ex)
+			{
+				LogToTextBox(ex.ToString());
+			}
+        }
+
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogToTextBox("Attempting to send UserDefined message");
+
+			Message m = new Message();
+			m.mID = IDTextBox.Text;
+			m.mType = MessageType.UserDefined;
+			m.mValues.Add("Payload", PayloadTextBox.Text);
+
+            SendInfo sendInfo;
+            sendInfo.client = mClient;
+            sendInfo.data = m.ToString();
+
+            Thread t = new Thread(NewSendThread);
+            t.Start(sendInfo);
+        }
+
+		private void SubscribeButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogToTextBox("Attempting to send Subscribe message");
+
+			Message m = new Message();
+			m.mID = SubscribeIDTextBox.Text;
+			m.mType = MessageType.Subscribe;
+
+			SendInfo sendInfo;
+			sendInfo.client = mClient;
+			sendInfo.data = m.ToString();
+
+			Thread t = new Thread(NewSendThread);
+			t.Start(sendInfo);
+		}
+
+		private void UnsubscribeButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogToTextBox("Attempting to send Unsubscribe message");
+
+			Message m = new Message();
+			m.mID = SubscribeIDTextBox.Text;
+			m.mType = MessageType.Unsubscribe;
+
+			SendInfo sendInfo;
+			sendInfo.client = mClient;
+			sendInfo.data = m.ToString();
+
+			Thread t = new Thread(NewSendThread);
+			t.Start(sendInfo);
+		}
+
+		public void NewSendThread(object sendInfo)
+		{
+			SendInfo info = (SendInfo)sendInfo;
+			byte[] byteData = Encoding.ASCII.GetBytes(info.data);
+			try
+			{
+				info.client.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), info.client);
+			}
+			catch (Exception ex)
+			{
+				LogToTextBox(ex.ToString());
+			}
+		}
+
+        public void SendCallback(IAsyncResult ar)
+        {
+            try
             {
-                state.sb.Clear();
-                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-                content = state.sb.ToString();
-                LogToTextBox(content);
+                Socket client = (Socket)ar.AsyncState;
+                int bytesSent = client.EndSend(ar);
+                LogToTextBox("Sent " + bytesSent + " bytes to the server");
             }
-
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+            catch (Exception ex)
+            {
+                LogToTextBox(ex.ToString());
+            }
         }
 
 		delegate void LogToTextBoxDelegate(string message);
@@ -115,41 +204,14 @@ namespace Messaging
 			}
 		}
 
-        private void SendButton_Click(object sender, RoutedEventArgs e)
-        {
-            LogToTextBox("Attempting to send message");
-            SendInfo sendInfo;
-            sendInfo.client = mClient;
-            sendInfo.data = PayloadTextBox.Text;
-
-            Thread t = new Thread(NewSendThread);
-            t.Start(sendInfo);
-        }
-
-        public void NewSendThread(object sendInfo)
-        {
-            SendInfo info = (SendInfo)sendInfo;
-            byte[] byteData = Encoding.ASCII.GetBytes(info.data);
-            info.client.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), info.client);
-            
-        }
-
-        public void SendCallback(IAsyncResult ar)
-        {
-            try
-            {
-                Socket client = (Socket)ar.AsyncState;
-                int bytesSent = client.EndSend(ar);
-                LogToTextBox("Sent " + bytesSent + " bytes to the server");
-
-            }
-            catch (Exception ex)
-            {
-                LogToTextBox(ex.ToString());
-            }
-        }
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			mWindowClosing.Set();
+			mClient.Close();
+		}
 
         private ManualResetEvent mConnectionFinished;
+		private ManualResetEvent mWindowClosing;
         private Socket mClient;
     }
 
