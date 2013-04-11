@@ -87,7 +87,9 @@ namespace MessageServer
 			LogToTextBox("Received a connection");
 			// Get the socket that handles the client request.
 			Socket listener = (Socket)ar.AsyncState;
-			Socket handler = listener.EndAccept(ar);
+			Socket client = listener.EndAccept(ar);
+
+			mClients.Add(client);
 		}
 
 		delegate void LogToTextBoxDelegate(string message);
@@ -108,5 +110,7 @@ namespace MessageServer
         }
 
 		private ManualResetEvent mConnectionFinished;
+		private List<Socket> mClients;
+		private Dictionary<string, List<Socket>> mIDToSubscribers;
     }
 }
