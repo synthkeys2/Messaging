@@ -88,7 +88,31 @@ namespace MessageServer
 			// Get the socket that handles the client request.
 			Socket listener = (Socket)ar.AsyncState;
 			Socket handler = listener.EndAccept(ar);
+
+            StateObject state = new StateObject();
+            state.workSocket = handler;
+            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
 		}
+
+        public void ReadCallback(IAsyncResult ar)
+        {
+            String content = String.Empty;
+
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+
+            int bytesRead = handler.EndReceive(ar);
+
+            if (bytesRead > 0)
+            {
+                state.sb.Clear();
+                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+                content = state.sb.ToString();
+                LogToTextBox(content);
+            }
+
+            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+        }
 
 		delegate void LogToTextBoxDelegate(string message);
 
@@ -108,5 +132,18 @@ namespace MessageServer
         }
 
 		private ManualResetEvent mConnectionFinished;
+    }
+
+    // State object for reading client data asynchronously
+    public class StateObject
+    {
+        // Client  socket.
+        public Socket workSocket = null;
+        // Size of receive buffer.
+        public const int BufferSize = 1024;
+        // Receive buffer.
+        public byte[] buffer = new byte[BufferSize];
+        // Received data string.
+        public StringBuilder sb = new StringBuilder();
     }
 }

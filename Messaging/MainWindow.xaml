@@ -5,7 +5,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40*" />
-            <RowDefinition Height="190*" />
+            <RowDefinition Height="97*" />
+            <RowDefinition Height="93*" />
             <RowDefinition Height="81*" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row ="0" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
@@ -15,8 +16,21 @@
             <Label Content="Port:" Height="28" Name="label2" />
             <TextBox Height="23" Name="PortTextBox" Width="120" Text="16789" TextAlignment="Center" />
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Name="LogTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="485" Text="Ready to connect!" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="24,0">
+            <Button Content="Send" Height="23" Name="SendButton" Width="75" Click="SendButton_Click" />
+            <Label Content="ID:" Height="28" Name="label3" />
+            <TextBox Height="23" Name="IDTextBox" Width="101" />
+            <Label Content="Payload:" Height="28" Name="label4" />
+            <TextBox Height="84" Name="PayloadTextBox" Width="200" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Name="stackPanel1">
+            <Button Content="Subscribe" Height="23" Name="SubscribeButton" Width="75" />
+            <Button Content="Unsubscribe" Height="23" Name="UnsubscribeButton" Width="75" />
+            <Label Content="ID:" Height="28" Name="label5" />
+            <TextBox Height="23" Name="textBox1" Width="120" />
         </StackPanel>
     </Grid>
 </Window>
