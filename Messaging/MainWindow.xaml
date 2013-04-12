@@ -3,34 +3,40 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MessagingClient" Height="350" Width="525" Closing="Window_Closing">
     <Grid>
-        <Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="23*" />
+			<ColumnDefinition Width="241*" />
+			<ColumnDefinition Width="35*" />
+			<ColumnDefinition Width="204*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
             <RowDefinition Height="40*" />
             <RowDefinition Height="97*" />
             <RowDefinition Height="93*" />
             <RowDefinition Height="81*" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row ="0" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1"  Grid.ColumnSpan="2" Margin="21,-1,9,1">
             <Button Content="Connect" Height="23" Name="ConnectButton" Width="75" Click="ConnectButton_Click" />
             <Label Content="IP:" Height="28" Name="label1" />
-            <TextBox Height="23" Name="IPTextBox" Width="120" Text="127.0.0.1" HorizontalAlignment="Stretch" TextAlignment="Center" />
-            <Label Content="Port:" Height="28" Name="label2" />
-            <TextBox Height="23" Name="PortTextBox" Width="120" Text="16789" TextAlignment="Center" />
-        </StackPanel>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBox Height="23" Name="IPTextBox" Width="104" Text="127.0.0.1" TextAlignment="Center" />
+            <Label Content=" Port:  " Height="28" Name="label2" />
+		</StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="4" Margin="9,0">
             <TextBox Name="LogTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="485" Text="Ready to connect!" />
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="24,0">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="20,0,44,0" Grid.Column="1" Width="415" Grid.ColumnSpan="3">
             <Button Content="Send" Height="23" Name="SendButton" Width="75" Click="SendButton_Click" />
             <Label Content="ID:" Height="28" Name="label3" />
             <TextBox Height="23" Name="IDTextBox" Width="101" />
             <Label Content="Payload:" Height="28" Name="label4" />
             <TextBox Height="84" Name="PayloadTextBox" Width="200" TextWrapping="Wrap" />
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Name="stackPanel1">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Name="stackPanel1" Grid.Column="1" Margin="21,0,29,0" Width="225" Grid.ColumnSpan="2">
             <Button Content="Subscribe" Height="23" Name="SubscribeButton" Width="75" Click="SubscribeButton_Click" />
-            <Button Content="Unsubscribe" Height="23" Name="UnsubscribeButton" Width="75" Click="UnsubscribeButton_Click" />
-            <Label Content="ID:" Height="28" Name="label5" />
-            <TextBox Height="23" Name="SubscribeIDTextBox" Width="120" />
-        </StackPanel>
-    </Grid>
+			<Label Content="ID:" Height="28" Name="label5" />
+            <TextBox Height="23" Name="SubscribeIDTextBox" Width="102" />
+		</StackPanel>
+		<Button Content="Unsubscribe" Height="23" Name="UnsubscribeButton" Width="74" Click="UnsubscribeButton_Click" Grid.Column="2" Margin="0,35,165,35" Grid.Row="2" Grid.ColumnSpan="2" />
+		<TextBox Height="23" Name="PortTextBox" Width="120" Text="16789" TextAlignment="Center" Grid.Column="2" Margin="34,7,84,10" Grid.ColumnSpan="2" />
+	</Grid>
 </Window>

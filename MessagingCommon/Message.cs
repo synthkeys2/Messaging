@@ -13,11 +13,18 @@ namespace MessagingCommon
 	}
 	public class Message : IComparable
 	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		public Message()
 		{
 			mValues = new Dictionary<string, object>();
 		}
 
+		/// <summary>
+		/// Constructor that decomposes a string into its message parts.
+		/// </summary>
+		/// <param name="messageAsString"></param>
 		public Message(string messageAsString)
 		{
 			mValues = new Dictionary<string, object>();
@@ -56,6 +63,10 @@ namespace MessagingCommon
 			}
 		}
 
+		/// <summary>
+		/// Takes a populated message object and prints it to a string.
+		/// </summary>
+		/// <returns>Message as string</returns>
 		public string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -77,6 +88,11 @@ namespace MessagingCommon
 			return sb.ToString();
 		}
 
+		/// <summary>
+		/// Compare 2 messages
+		/// </summary>
+		/// <param name="obj">Right hand side</param>
+		/// <returns></returns>
 		public int CompareTo(object obj)
 		{
 			if (obj == null) return 1;
@@ -89,9 +105,19 @@ namespace MessagingCommon
 			else throw new ArgumentException("Object is not a Message");
 		}
 
+		/// <summary>
+		/// Classifies the message
+		/// </summary>
 		public string mID;
+
+		/// <summary>
+		/// Describes the type of message
+		/// </summary>
 		public MessageType mType;
+
+		/// <summary>
+		/// Holds variable payloads of a message
+		/// </summary>
 		public Dictionary<string, object> mValues;
-		public int port;
 	}
 }

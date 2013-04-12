@@ -32,6 +32,11 @@ namespace MessageClient
 			mWindowClosing = new ManualResetEvent(false);
         }
 
+		/// <summary>
+		/// Connect to the server given the ip text box.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
 			LogToTextBox("Attempting to connect to " + IPTextBox.Text);
@@ -43,7 +48,11 @@ namespace MessageClient
 			t.Start(connectInfo);
         }
 
-		public void NewConnectionThread(object connectInfo)
+		/// <summary>
+		/// Spawn a new thread to connect so we don't block
+		/// </summary>
+		/// <param name="connectInfo">Holds the ip and port</param>
+		private void NewConnectionThread(object connectInfo)
 		{
 			try
 			{
@@ -61,7 +70,11 @@ namespace MessageClient
 			LogToTextBox("Successfully connected");
 		}
 
-        public void ConnectCallback(IAsyncResult ar)
+		/// <summary>
+		/// Called in response to a connection, start listening for receive.
+		/// </summary>
+		/// <param name="ar">Holds the socket</param>
+		private void ConnectCallback(IAsyncResult ar)
         {
 			try
 			{
@@ -81,7 +94,11 @@ namespace MessageClient
 			}       
         }
 
-        public void ReadCallback(IAsyncResult ar)
+		/// <summary>
+		/// Called when a read is successful, then calls another read.
+		/// </summary>
+		/// <param name="ar"></param>
+		private void ReadCallback(IAsyncResult ar)
         {
 			mWindowClosing.Set();
             String content = String.Empty;
@@ -110,6 +127,11 @@ namespace MessageClient
 			}
         }
 
+		/// <summary>
+		/// Called when the client wants to send a user defined message to the server.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             LogToTextBox("Attempting to send UserDefined message");
@@ -127,6 +149,11 @@ namespace MessageClient
             t.Start(sendInfo);
         }
 
+		/// <summary>
+		/// Set up a subscribe message to the server.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void SubscribeButton_Click(object sender, RoutedEventArgs e)
 		{
 			LogToTextBox("Attempting to send Subscribe message");
@@ -143,6 +170,11 @@ namespace MessageClient
 			t.Start(sendInfo);
 		}
 
+		/// <summary>
+		/// Set up an unsubscribe message to the server.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void UnsubscribeButton_Click(object sender, RoutedEventArgs e)
 		{
 			LogToTextBox("Attempting to send Unsubscribe message");
@@ -159,7 +191,11 @@ namespace MessageClient
 			t.Start(sendInfo);
 		}
 
-		public void NewSendThread(object sendInfo)
+		/// <summary>
+		///  The thread that is spawned for all sends.
+		/// </summary>
+		/// <param name="sendInfo">Contains a string to send and a client to send it to</param>
+		private void NewSendThread(object sendInfo)
 		{
 			SendInfo info = (SendInfo)sendInfo;
 			byte[] byteData = Encoding.ASCII.GetBytes(info.data);
@@ -173,7 +209,11 @@ namespace MessageClient
 			}
 		}
 
-        public void SendCallback(IAsyncResult ar)
+		/// <summary>
+		/// The Thread spawned by a successful send call.
+		/// </summary>
+		/// <param name="ar">Holds the client socket</param>
+		private void SendCallback(IAsyncResult ar)
         {
             try
             {
@@ -189,7 +229,11 @@ namespace MessageClient
 
 		delegate void LogToTextBoxDelegate(string message);
 
-		public void LogToTextBox(string message)
+		/// <summary>
+		/// Logs info to the text box on screen
+		/// </summary>
+		/// <param name="message"></param>
+		private void LogToTextBox(string message)
 		{
 			if (LogTextBox.Dispatcher.CheckAccess())
 			{
@@ -204,10 +248,18 @@ namespace MessageClient
 			}
 		}
 
+		/// <summary>
+		/// Clean up the socket and end the read thread when the window closes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			mWindowClosing.Set();
-			mClient.Close();
+			if (mClient != null)
+			{
+				mClient.Close();
+			}
 		}
 
         private ManualResetEvent mConnectionFinished;
@@ -215,19 +267,27 @@ namespace MessageClient
         private Socket mClient;
     }
 
+	/// <summary>
+	/// Holds an ip and port for passing around through one parameter
+	/// </summary>
 	struct ConnectInfo
 	{
 		public IPAddress ip;
 		public int port;
 	}
 
+	/// <summary>
+	/// Holds a client and the data for sending 
+	/// </summary>
     struct SendInfo
     {
         public Socket client;
         public String data;
     }
 
-    // State object for reading client data asynchronously
+    /// <summary>
+	/// State object for reading server data asynchronously
+    /// </summary>
     public class StateObject
     {
         // Client  socket.
